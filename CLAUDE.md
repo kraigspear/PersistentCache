@@ -23,7 +23,7 @@ swift package clean
 
 ## Architecture Overview
 
-This Swift package implements a thread-safe memory cache with automatic eviction and disk persistence. The cache leverages NSCache for memory management, which provides system-integrated eviction policies based on available memory rather than strict LRU behavior.
+This Swift package implements a thread-safe memory cache with automatic eviction and disk persistence. The cache leverages NSCache for memory management, which provides system-integrated eviction policies based on available memory pressure.
 
 ### Core Components
 
@@ -72,7 +72,7 @@ When making changes to the cache implementation:
 
 The package uses Swift Testing framework (@Test attributes). Tests are located in `Tests/PersistentCacheTests/` and cover:
 - Basic cache operations (set/get/remove)
-- LRU eviction behavior
+- Memory pressure-based eviction behavior
 - Memory pressure handling
 - Cost-based eviction
 - Edge cases and error handling

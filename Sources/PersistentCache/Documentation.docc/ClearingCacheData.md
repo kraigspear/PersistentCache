@@ -4,7 +4,7 @@ Learn how to efficiently manage cache contents using the clear method with diffe
 
 ## Overview
 
-The LRUActorCache provides fine-grained control over cache clearing operations through the `clear(_:)` method and the `ClearOption` enum. This allows you to selectively clear memory, disk, or both storage layers based on your application's needs.
+PersistentCache provides fine-grained control over cache clearing operations through the `clear(_:)` method and the `ClearOption` enum. This allows you to selectively clear memory, disk, or both storage layers based on your application's needs.
 
 ## Clear Options
 

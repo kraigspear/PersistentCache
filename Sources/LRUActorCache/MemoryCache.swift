@@ -37,6 +37,21 @@ extension Data: CachedValue {
 
 // MARK: - Container Class
 
+// MARK: - Clear Options
+
+/// Options for clearing cache contents.
+///
+/// Specifies which cache storage locations should be cleared
+/// when calling the clear method.
+public enum ClearOption: Sendable {
+    /// Clear only the in-memory cache, preserving disk storage
+    case memoryOnly
+    /// Clear only the disk cache, preserving in-memory values
+    case diskOnly
+    /// Clear both memory and disk caches
+    case all
+}
+
 // MARK: - MemoryCache Actor
 
 /// An actor that manages a memory cache with automatic eviction.
@@ -167,6 +182,31 @@ public actor MemoryCache<Key: Hashable & CustomStringConvertible & Sendable, Val
             numberOfWrites = 0
         } else {
             numberOfWrites += 1
+        }
+    }
+
+    /// Removes values from the cache according to the specified option.
+    ///
+    /// This method provides fine-grained control over which cache layers to clear.
+    /// Use with caution as this operation cannot be undone.
+    ///
+    /// - Parameter option: Specifies which cache storage to clear (memory, disk, or both).
+    ///   Defaults to `.all` to clear both memory and disk.
+    public func clear(_ option: ClearOption = .all) async {
+        switch option {
+        case .memoryOnly:
+            values.removeAllObjects()
+        case .diskOnly:
+            await diskCache.clear()
+        case .all:
+            values.removeAllObjects()
+            await diskCache.clear()
+        }
+        
+        // Reset write counter when clearing everything since we're affecting the disk state.
+        // Keep the counter when only clearing memory to maintain disk cleanup schedule.
+        if option != .memoryOnly {
+            numberOfWrites = 0
         }
     }
 }

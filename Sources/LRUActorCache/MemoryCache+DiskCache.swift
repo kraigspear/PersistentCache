@@ -219,6 +219,44 @@ extension MemoryCache {
             }
         }
 
+        /// Removes all cache files from the disk.
+        ///
+        /// This method deletes all files in the cache directory but preserves
+        /// the directory itself for future use. The operation is performed
+        /// asynchronously to avoid blocking other cache operations.
+        func clear() async {
+            guard let cacheFolder else { return }
+
+            let signpostID = signposter.makeSignpostID()
+            let state = signposter.beginInterval("DiskClear", id: signpostID)
+            defer { signposter.endInterval("DiskClear", state) }
+
+            let fileManager = FileManager.default
+
+            do {
+                let files = try fileManager.contentsOfDirectory(
+                    at: cacheFolder,
+                    includingPropertiesForKeys: nil
+                )
+
+                var removedCount = 0
+                for file in files {
+                    do {
+                        try fileManager.removeItem(at: file)
+                        removedCount += 1
+                    } catch {
+                        logger.error("Failed to remove cache file \(file.lastPathComponent): \(error)")
+                    }
+                }
+
+                if removedCount > 0 {
+                    logger.info("Cleared \(removedCount) cache files from disk")
+                }
+            } catch {
+                logger.error("Failed to clear cache directory: \(error)")
+            }
+        }
+
         // MARK: - Private Methods
 
         /// Removes cache files older than maxFileAge from the shared cache directory.

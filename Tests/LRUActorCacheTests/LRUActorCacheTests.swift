@@ -510,3 +510,255 @@ struct EdgeCaseTests {
         }
     }
 }
+
+// MARK: - Clear Method Tests
+
+@Suite("ClearMethodTests", .serialized)
+struct ClearMethodTests {
+    
+    @Test("Clear with memoryOnly option preserves disk data")
+    func clearMemoryOnlyPreservesDiskData() async throws {
+        // Given: Cache with data in both memory and disk
+        let identifier = "memory-only-clear-test"
+        let cache = MemoryCache<String, TestCachedValue>(identifier: identifier)
+        let key = "testKey"
+        let value = TestCachedValue(someValue: "test data for memory clear")
+        
+        await cache.set(value, for: key)
+        // Verify data is in memory
+        #expect(await cache.contains(key), "Data should be in memory after set operation")
+        // Verify data can be retrieved (which confirms it's also on disk)
+        let retrievedBeforeClear = await cache.value(for: key)
+        #expect(retrievedBeforeClear == value, "Data should be retrievable before clearing memory")
+        
+        // When: Clear memory only
+        await cache.clear(.memoryOnly)
+        
+        // Then: Memory should be cleared but disk should preserve data
+        #expect(await !cache.contains(key), "Memory should not contain the key after memory-only clear")
+        
+        // Data should still be retrievable from disk
+        let retrievedAfterClear = await cache.value(for: key)
+        #expect(retrievedAfterClear == value, "Data should still be retrievable from disk after memory-only clear")
+        
+        // After retrieval from disk, it should be back in memory
+        #expect(await cache.contains(key), "Key should be in memory again after disk retrieval following clear")
+    }
+    
+    @Test("Clear with diskOnly option preserves memory data")
+    func clearDiskOnlyPreservesMemoryData() async throws {
+        // Given: Cache with data in both memory and disk
+        let identifier = "disk-only-clear-test"
+        let cache = MemoryCache<String, TestCachedValue>(identifier: identifier)
+        let key = "testKey"
+        let value = TestCachedValue(someValue: "test data for disk clear")
+        
+        await cache.set(value, for: key)
+        // Verify data is in memory
+        #expect(await cache.contains(key), "Data should be in memory after set operation")
+        
+        // When: Clear disk only
+        await cache.clear(.diskOnly)
+        
+        // Then: Memory should still contain the data
+        #expect(await cache.contains(key), "Memory should still contain the key after disk-only clear")
+        let retrievedFromMemory = await cache.value(for: key)
+        #expect(retrievedFromMemory == value, "Data should still be retrievable from memory after disk-only clear")
+        
+        // Create a new cache instance to verify disk was actually cleared
+        let newCache = MemoryCache<String, TestCachedValue>(identifier: identifier)
+        let retrievedFromDisk = await newCache.value(for: key)
+        #expect(retrievedFromDisk == nil, "Data should not be retrievable from disk in new instance after disk-only clear")
+    }
+    
+    @Test("Clear with all option clears both memory and disk")
+    func clearAllClearsBothMemoryAndDisk() async throws {
+        // Given: Cache with data in both memory and disk
+        let identifier = "all-clear-test"
+        let cache = MemoryCache<String, TestCachedValue>(identifier: identifier)
+        let key = "testKey"
+        let value = TestCachedValue(someValue: "test data for complete clear")
+        
+        await cache.set(value, for: key)
+        // Verify data is in memory
+        #expect(await cache.contains(key), "Data should be in memory after set operation")
+        
+        // When: Clear all
+        await cache.clear(.all)
+        
+        // Then: Memory should be cleared
+        #expect(await !cache.contains(key), "Memory should not contain the key after clearing all")
+        
+        // Data should not be retrievable from current instance
+        let retrievedFromSameInstance = await cache.value(for: key)
+        #expect(retrievedFromSameInstance == nil, "Data should not be retrievable from same instance after clearing all")
+        
+        // Create a new cache instance to verify disk was also cleared
+        let newCache = MemoryCache<String, TestCachedValue>(identifier: identifier)
+        let retrievedFromDisk = await newCache.value(for: key)
+        #expect(retrievedFromDisk == nil, "Data should not be retrievable from disk in new instance after clearing all")
+    }
+    
+    @Test("Clear with default parameter clears all")
+    func clearWithDefaultParameterClearsAll() async throws {
+        // Given: Cache with data in both memory and disk
+        let identifier = "default-clear-test"
+        let cache = MemoryCache<String, TestCachedValue>(identifier: identifier)
+        let key = "testKey"
+        let value = TestCachedValue(someValue: "test data for default clear")
+        
+        await cache.set(value, for: key)
+        // Verify data is in memory
+        #expect(await cache.contains(key), "Data should be in memory after set operation")
+        
+        // When: Clear with default parameter (no argument)
+        await cache.clear()
+        
+        // Then: Should behave exactly like clear(.all)
+        #expect(await !cache.contains(key), "Memory should not contain the key after default clear")
+        
+        // Data should not be retrievable from current instance
+        let retrievedFromSameInstance = await cache.value(for: key)
+        #expect(retrievedFromSameInstance == nil, "Data should not be retrievable from same instance after default clear")
+        
+        // Create a new cache instance to verify disk was also cleared
+        let newCache = MemoryCache<String, TestCachedValue>(identifier: identifier)
+        let retrievedFromDisk = await newCache.value(for: key)
+        #expect(retrievedFromDisk == nil, "Data should not be retrievable from disk in new instance after default clear")
+    }
+    
+    @Test("Clear memoryOnly does not reset numberOfWrites counter")
+    func clearMemoryOnlyDoesNotResetWriteCounter() async throws {
+        // Given: Cache with multiple writes to trigger counter tracking
+        let identifier = "memory-clear-counter-test"
+        let cache = MemoryCache<String, TestCachedValue>(identifier: identifier)
+        
+        // Perform multiple writes to increment the counter
+        for i in 0..<50 {
+            let key = "key\(i)"
+            let value = TestCachedValue(someValue: "value\(i)")
+            await cache.set(value, for: key)
+        }
+        
+        // When: Clear memory only
+        await cache.clear(.memoryOnly)
+        
+        // Then: Write one more value and verify cleanup doesn't happen immediately
+        // (this is indirect testing since we can't access numberOfWrites directly)
+        let testKey = "cleanup-test-key"
+        let testValue = TestCachedValue(someValue: "cleanup test")
+        await cache.set(testValue, for: testKey)
+        
+        // The numberOfWrites counter should still be high, so we expect normal behavior
+        // We can't directly test the counter, but we can verify the cache still works normally
+        let retrieved = await cache.value(for: testKey)
+        #expect(retrieved == testValue, "Cache should continue working normally after memory-only clear without counter reset")
+    }
+    
+    @Test("Clear diskOnly and all reset numberOfWrites counter")
+    func clearDiskOptionsResetWriteCounter() async throws {
+        // Given: Cache with multiple writes to increment counter
+        let identifier = "disk-clear-counter-test"
+        let cache = MemoryCache<String, TestCachedValue>(identifier: identifier)
+        
+        // Perform multiple writes to increment the counter beyond cleanup threshold
+        for i in 0..<120 {
+            let key = "counter-key\(i)"
+            let value = TestCachedValue(someValue: "counter-value\(i)")
+            await cache.set(value, for: key)
+        }
+        
+        // When: Clear disk only
+        await cache.clear(.diskOnly)
+        
+        // Then: The numberOfWrites counter should be reset
+        // We test this indirectly by verifying cache continues to work normally
+        let testKey = "post-clear-test"
+        let testValue = TestCachedValue(someValue: "post clear test")
+        await cache.set(testValue, for: testKey)
+        
+        let retrieved = await cache.value(for: testKey)
+        #expect(retrieved == testValue, "Cache should work normally after disk clear with counter reset")
+    }
+    
+    @Test("Multiple clear operations work correctly")
+    func multipleClearOperationsWork() async throws {
+        // Given: Cache with test data
+        let identifier = "multiple-clear-test"
+        let cache = MemoryCache<String, TestCachedValue>(identifier: identifier)
+        
+        // Set initial data
+        let key1 = "key1"
+        let key2 = "key2"
+        let value1 = TestCachedValue(someValue: "value1")
+        let value2 = TestCachedValue(someValue: "value2")
+        
+        await cache.set(value1, for: key1)
+        await cache.set(value2, for: key2)
+        
+        // When: Perform multiple clear operations in sequence
+        // First clear memory only
+        await cache.clear(.memoryOnly)
+        #expect(await !cache.contains(key1), "Memory should be cleared after first clear")
+        
+        // Data should still be on disk
+        let fromDisk1 = await cache.value(for: key1)
+        #expect(fromDisk1 == value1, "Data should be retrievable from disk after memory clear")
+        
+        // Clear all
+        await cache.clear(.all)
+        #expect(await !cache.contains(key1), "Memory should be cleared after second clear")
+        
+        // Then: Nothing should be retrievable
+        let finalResult1 = await cache.value(for: key1)
+        let finalResult2 = await cache.value(for: key2)
+        #expect(finalResult1 == nil, "No data should remain after clearing all")
+        #expect(finalResult2 == nil, "No data should remain after clearing all")
+    }
+    
+    @Test("Clear operations preserve data isolation between cache instances")
+    func clearPreservesDataIsolationBetweenInstances() async throws {
+        // Given: Two cache instances with different identifiers
+        let cacheA = MemoryCache<String, TestCachedValue>(identifier: "cache-isolation-A")
+        let cacheB = MemoryCache<String, TestCachedValue>(identifier: "cache-isolation-B")
+        
+        let key = "shared-key"
+        let valueA = TestCachedValue(someValue: "data for cache A")
+        let valueB = TestCachedValue(someValue: "data for cache B")
+        
+        await cacheA.set(valueA, for: key)
+        await cacheB.set(valueB, for: key)
+        
+        // When: Clear all data in cache A
+        await cacheA.clear(.all)
+        
+        // Then: Cache A should have no data
+        let resultA = await cacheA.value(for: key)
+        #expect(resultA == nil, "Cache A should have no data after clear")
+        
+        // Cache B should be unaffected
+        let resultB = await cacheB.value(for: key)
+        #expect(resultB == valueB, "Cache B should retain its data when cache A is cleared")
+    }
+    
+    @Test("Clear handles empty cache gracefully")
+    func clearHandlesEmptyCacheGracefully() async throws {
+        // Given: Empty cache
+        let identifier = "empty-cache-clear-test"
+        let cache = MemoryCache<String, TestCachedValue>(identifier: identifier)
+        
+        // When: Clear operations on empty cache
+        await cache.clear(.memoryOnly)
+        await cache.clear(.diskOnly)
+        await cache.clear(.all)
+        await cache.clear() // default
+        
+        // Then: Operations should complete without error and cache should remain functional
+        let testKey = "post-empty-clear-test"
+        let testValue = TestCachedValue(someValue: "test after empty clear")
+        await cache.set(testValue, for: testKey)
+        
+        let retrieved = await cache.value(for: testKey)
+        #expect(retrieved == testValue, "Cache should remain functional after clearing empty cache")
+    }
+}

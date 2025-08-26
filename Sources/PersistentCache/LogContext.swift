@@ -8,7 +8,7 @@ enum LogContext: String {
     case mockMemoryPressure = "🧪⚠️mockMemoryPressure"
     #endif
     func logger() -> os.Logger {
-        os.Logger(subsystem: "com.spareware.LRUActorCache", category: rawValue)
+        os.Logger(subsystem: "com.spareware.PersistentCache", category: rawValue)
     }
 
     /// Returns a signposter for performance measurement.

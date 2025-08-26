@@ -1,7 +1,7 @@
 {
   "configurations" : [
     {
-      "id" : "128B537D-F1CF-4214-9E69-9F73F248F7FE",
+      "id" : "E45AA5F1-7F6B-4656-B812-74171EBF39E5",
       "name" : "Test Scheme Action",
       "options" : {
 
@@ -9,14 +9,14 @@
     }
   ],
   "defaultOptions" : {
-    "performanceAntipatternCheckerEnabled" : true
+
   },
   "testTargets" : [
     {
       "target" : {
         "containerPath" : "container:",
-        "identifier" : "LRUActorCacheTests",
-        "name" : "LRUActorCacheTests"
+        "identifier" : "PersistentCacheTests",
+        "name" : "PersistentCacheTests"
       }
     }
   ],

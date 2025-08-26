@@ -1,6 +1,6 @@
 # Architecture Overview
 
-This document provides a detailed architectural overview of the LRUActorCache implementation for developers working on the codebase.
+This document provides a detailed architectural overview of the PersistentCache implementation for developers working on the codebase.
 
 ## Design Philosophy
 

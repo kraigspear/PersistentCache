@@ -1,6 +1,6 @@
-# Swift Memory Cache
+# PersistentCache
 
-A thread-safe memory cache implementation with automatic eviction and disk persistence. Built on NSCache for reliable system-integrated memory management.
+A thread-safe persistent cache implementation with automatic memory management and disk persistence. Built on NSCache for reliable system-integrated memory management with persistent disk storage for data durability.
 
 ## Features
 
@@ -17,7 +17,7 @@ Add this package to your project using Swift Package Manager:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/kraigspear/LRUActorCache.git", from: "0.1.0")
+    .package(url: "https://github.com/kraigspear/PersistentCache.git", from: "2.0.0")
 ]
 ```
 

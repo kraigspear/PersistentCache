@@ -5,13 +5,13 @@ This document provides a detailed walkthrough of the codebase implementation for
 ## File Structure
 
 ```
-Sources/LRUActorCache/
+Sources/PersistentCache/
 ├── MemoryCache.swift            # Main cache actor and CachedValue protocol
 ├── MemoryCache+DiskCache.swift  # Private DiskCache nested class
 └── LogContext.swift             # Logging and performance monitoring
 
-Tests/LRUActorCacheTests/
-└── LRUActorCacheTests.swift     # All test suites (21 tests)
+Tests/PersistentCacheTests/
+└── PersistentCacheTests.swift     # All test suites (21 tests)
 ```
 
 ## MemoryCache Implementation
@@ -329,7 +329,7 @@ Use Instruments with signposts:
 
 ### Using Console.app
 
-Filter by subsystem: `com.spareware.LRUActorCache`
+Filter by subsystem: `com.spareware.PersistentCache`
 
 Categories:
 - `🐏cache` - General operations

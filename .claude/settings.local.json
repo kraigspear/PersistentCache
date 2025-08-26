@@ -1,3 +1,18 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(git pull:*)",
+      "Bash(git checkout:*)",
+      "Bash(swift test)",
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "Bash(mkdir:*)",
+      "Bash(swift package:*)",
+      "Bash(swift build)",
+      "Bash(git stash push:*)",
+      "Bash(gh pr create:*)",
+      "Bash(git mv:*)"
+    ]
+  },
   "enableAllProjectMcpServers": false
 }

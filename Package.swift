@@ -4,7 +4,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "LRUActorCache",
+    name: "PersistentCache",
     platforms: [
         .iOS(.v26),
         .macOS(.v26),
@@ -12,22 +12,22 @@ let package = Package(
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
-            name: "LRUActorCache",
-            targets: ["LRUActorCache"]
+            name: "PersistentCache",
+            targets: ["PersistentCache"]
         ),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "LRUActorCache",
+            name: "PersistentCache",
             swiftSettings: [
                 .enableExperimentalFeature("StrictConcurrency")
             ]
         ),
         .testTarget(
-            name: "LRUActorCacheTests",
-            dependencies: ["LRUActorCache"],
+            name: "PersistentCacheTests",
+            dependencies: ["PersistentCache"],
             swiftSettings: [
                 .enableExperimentalFeature("StrictConcurrency")
             ]

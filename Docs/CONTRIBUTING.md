@@ -1,6 +1,6 @@
 # Contributing Guide
 
-Welcome! This guide will help you get started with contributing to the LRUActorCache project.
+Welcome! This guide will help you get started with contributing to the PersistentCache project.
 
 ## Development Setup
 
@@ -14,8 +14,8 @@ Welcome! This guide will help you get started with contributing to the LRUActorC
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/kraigspear/LRUActorCache.git
-   cd LRUActorCache
+   git clone https://github.com/kraigspear/PersistentCache.git
+   cd PersistentCache
    ```
 
 2. Open in Xcode:
@@ -244,13 +244,13 @@ Batch operations are ~3x faster for 100+ items.
 ## Project Structure
 
 ```
-Sources/LRUActorCache/
+Sources/PersistentCache/
 ├── MemoryCache.swift           # Main actor implementation
 ├── MemoryCache+DiskCache.swift # Private DiskCache nested class
 └── LogContext.swift            # Logging and performance monitoring
 
-Tests/LRUActorCacheTests/
-└── LRUActorCacheTests.swift    # All test suites
+Tests/PersistentCacheTests/
+└── PersistentCacheTests.swift    # All test suites
 
 Docs/
 ├── ARCHITECTURE.md             # High-level design

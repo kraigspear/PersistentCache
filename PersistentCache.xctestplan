@@ -15,8 +15,8 @@
     {
       "target" : {
         "containerPath" : "container:",
-        "identifier" : "LRUActorCacheTests",
-        "name" : "LRUActorCacheTests"
+        "identifier" : "PersistentCacheTests",
+        "name" : "PersistentCacheTests"
       }
     }
   ],

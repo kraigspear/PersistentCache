@@ -1,6 +1,6 @@
 # Test Coverage Notes
 
-This document provides detailed information about test coverage for the LRUActorCache project, including what is tested, what isn't tested (and why), and recommendations for future testing improvements.
+This document provides detailed information about test coverage for the PersistentCache project, including what is tested, what isn't tested (and why), and recommendations for future testing improvements.
 
 ## Testing Philosophy
 

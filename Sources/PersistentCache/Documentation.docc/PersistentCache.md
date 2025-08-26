@@ -1,10 +1,10 @@
-# ``LRUActorCache``
+# ``PersistentCache``
 
-A thread-safe memory cache with automatic eviction and disk persistence.
+A thread-safe persistent cache with automatic memory management and disk persistence.
 
 ## Overview
 
-LRUActorCache provides a high-performance, thread-safe caching solution that combines in-memory storage with persistent disk caching. Built on Swift's actor model and NSCache, it automatically manages memory pressure while ensuring data persistence across app launches.
+PersistentCache provides a high-performance, thread-safe caching solution that combines in-memory storage with persistent disk caching. Built on Swift's actor model and NSCache, it automatically manages memory pressure while ensuring data persistence across app launches.
 
 ## Topics
 

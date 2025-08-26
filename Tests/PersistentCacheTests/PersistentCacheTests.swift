@@ -1,7 +1,7 @@
 import Foundation
 import Testing
 
-@testable import LRUActorCache
+@testable import PersistentCache
 
 // A simple CachedValue implementation for testing
 private struct TestCachedValue: CachedValue, Equatable {
